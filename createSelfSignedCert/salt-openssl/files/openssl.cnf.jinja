@@ -1,0 +1,359 @@
+{#
+## Be your own Certification Authority.
+##
+## Create a self-signed TLS CA certicate
+##
+## @TODO Migrate
+##
+
+##
+## Be your own Certification Authority.
+##
+## Create a self-signed TLS CA certicate
+##
+## Originally written: 2016-04-29
+## See: https://gist.github.com/renoirb/de501adc1164e9fec47b257d6ee2a2ff
+## File: openssl.cnf.jinja
+##
+## Renoir Boulanger <contribs@renoirboulanger.com>
+##
+#}
+
+##
+## Managed by Salt Stack. Do NOT edit manually
+##
+## OpenSSL Configuration file
+##
+## Maintained by Renoir Boulanger <hello@renoirboulanger.com>
+##
+## Inspired by the following docs pages:
+## [1]: https://jamielinux.com/docs/openssl-certificate-authority/create-the-root-pair.html
+## [2]: https://jamielinux.com/docs/openssl-certificate-authority/create-the-intermediate-pair.html
+## [3]: https://jamielinux.com/docs/openssl-certificate-authority/sign-server-and-client-certificates.html
+## [4]: https://jamielinux.com/docs/openssl-certificate-authority/certificate-revocation-lists.html
+## [5]: https://openssl.org/docs/
+## [5]: http://web.mit.edu/crypto/openssl.cnf
+##
+## ... and following conventions from /usr/lib/ssl/misc/CA.sh
+##
+## IMPORTANT: In contrast to the procedure in [1], this doesn't take
+##            into account an intermediate CA [2]. Nor we'll have
+##            it generate Web Browser certificate [3] so we don't see
+##            errors. We might do this later #TODO
+##
+
+
+####################################################################
+# This definition stops the following lines choking if HOME isn't
+# defined.
+
+HOME        = .
+RANDFILE    = $ENV::HOME/.rnd
+
+# Extra OBJECT IDENTIFIER info:
+# https://www.openssl.org/docs/manmaster/apps/x509v3_config.html#ARBITRARY_EXTENSIONS
+#oid_file		= $ENV::HOME/.oid
+oid_section	= new_oids
+
+# To use this configuration file with the "-extfile" option of the
+# "openssl x509" utility, name here the section containing the
+# X.509v3 extensions to use:
+# extensions		=
+# (Alternatively, use a configuration file that has only
+# X.509v3 extensions in its main [= default] section.)
+
+
+####################################################################
+[ new_oids ]
+# We can add new OIDs in here for use by 'ca' and 'req'.
+# Add a simple OID like this:
+# testoid1=1.2.3.4
+# Or use config file substitution like this:
+# testoid2=${testoid1}.5.6
+
+
+####################################################################
+[ ca ]
+
+default_ca  = CA_default    # The default ca section
+
+
+####################################################################
+[ CA_default ]
+
+dir           = {{ CATOP }}
+certs         = $dir/certs
+crl_dir       = $dir/crl
+new_certs_dir = $dir/newcerts
+database      = $dir/index.txt
+serial        = $dir/serial
+RANDFILE      = $dir/private/.rand
+
+# The root key and root certificate.
+private_key = $dir/private/ca.key
+certificate = $dir/certs/ca.pem
+
+# For certificate revocation lists.
+crlnumber        = $dir/crlnumber
+crl              = $dir/crl.pem
+default_crl_days = 30
+
+# See #CRL_EXT
+crl_extensions   = crl_ext
+
+# SHA-1 is deprecated, so use SHA-2 instead.
+default_md   = sha256
+
+name_opt     = ca_default
+cert_opt     = ca_default
+default_days = 365
+preserve     = no
+
+# See #POLICY_STRICT
+#policy      = policy_strict
+policy       = policy_match
+
+
+####################################################################
+[ policy_strict ]
+# #POLICY_STRICT
+#
+# The root CA should only sign intermediate certificates that match.
+# See the POLICY FORMAT section of `man ca`.
+#
+# If we wanted to use an intermediary certificate as [2], we would use
+# We’ll apply policy_strict for all root CA signatures, as the root
+# CA is only being used to create intermediate CAs.
+
+countryName             = match
+stateOrProvinceName     = match
+organizationName        = match
+organizationalUnitName  = optional
+emailAddress            = optional
+commonName              = supplied
+
+
+####################################################################
+[ policy_loose ]
+# Allow the intermediate CA to sign a more diverse range of certificates.
+# See the POLICY FORMAT section of the `ca` man page.
+
+# NOT USED YET. This will be useful in [2]
+
+countryName            = optional
+stateOrProvinceName    = optional
+localityName           = optional
+organizationName       = optional
+organizationalUnitName = optional
+commonName             = supplied
+emailAddress           = optional
+
+
+####################################################################
+[ policy_match ]
+# What was the original policy assigned to CA_default
+
+# NOT USED. Could be used back in policy from CA_default block
+
+countryName            = match
+stateOrProvinceName    = match
+organizationName       = match
+organizationalUnitName = optional
+commonName             = supplied
+emailAddress           = optional
+
+
+####################################################################
+[ policy_anything ]
+# For the 'anything' policy
+# At this point in time, you must list all acceptable 'object'
+# types.
+
+countryName            = optional
+stateOrProvinceName    = optional
+localityName           = optional
+organizationName       = optional
+organizationalUnitName = optional
+commonName             = supplied
+emailAddress           = optional
+
+
+####################################################################
+[ req ]
+# Options for the `req` tool (`man req`)
+# See also https://openssl.org/docs/manmaster/apps/req.html
+
+default_bits       = 2048
+
+# See #REQ_DN
+distinguished_name = req_distinguished_name
+
+# This sets a mask for permitted string types. There are several options.
+# default: PrintableString, T61String, BMPString.
+# pkix   : PrintableString, BMPString (PKIX recommendation before 2004)
+# utf8only: only UTF8Strings (PKIX recommendation after 2004).
+# nombstr : PrintableString, T61String (no BMPStrings or UTF8Strings).
+# MASK:XXXX a literal mask value.
+# WARNING: ancient versions of Netscape crash on BMPStrings or UTF8Strings.
+string_mask = utf8only
+
+# SHA-1 is deprecated, so use SHA-2 instead.
+default_md = sha256
+
+# Extension to add when the -x509 option is used
+# this specifies the configuration file section
+# containing a list of extensions to add to certificate
+# generated when the -x509 switch is used.
+# It can be overridden by the -extensions command line switch.
+# See #EXT_V3_CA
+x509_extensions  = v3_ca
+
+# See #REQ_ATTR
+attributes    = req_attributes
+
+
+####################################################################
+[ req_distinguished_name ]
+# #REQ_DN
+#
+# See <https://en.wikipedia.org/wiki/Certificate_signing_request>
+
+countryName         = Country Name (2 letter code)
+countryName_default = US
+countryName_min     = 2
+countryName_max     = 2
+
+stateOrProvinceName         = State or Province Name (full name)
+stateOrProvinceName_default = New-York
+
+localityName         = Locality Name (eg, city)
+localityName_default = New-York
+
+0.organizationName = Second Organization Name (eg, company)
+0.organizationName_default = {{ SUBJ_O }}
+
+1.organizationName = Organization Name (eg, company)
+1.organizationName_default = {{ SUBJ_OU }}
+
+organizationalUnitName = Organizational Unit Name (eg, section)
+organizationalUnitName_default = {{ SUBJ_OU }} Delivery Engineering Team
+
+commonName         = Common Name (e.g. server FQDN or YOUR name)
+commonName_max     = 64
+commonName_default = {{ SUBJ_CN }}
+
+emailAddress = Email Address
+emailAddress_max = 64
+emailAddress_default = {{ SUBJ_EMAIL }}
+
+
+####################################################################
+[ req_attributes ]
+# #REQ_ATTR
+#
+
+challengePassword = A challenge password
+challengePassword_min = 4
+challengePassword_max = 20
+
+
+####################################################################
+[ usr_cert ]
+# These extensions are added when 'ca' signs a request.
+# Extensions for client certificates (`man x509v3_config`).
+# This goes against PKIX guidelines but some CAs do it and some software
+# requires this to avoid interpreting an end user certificate as a CA.
+
+# NOT USED YET. This will be useful in [3]
+
+basicConstraints       = CA:FALSE
+nsCertType             = client, email
+subjectKeyIdentifier   = hash
+authorityKeyIdentifier = keyid,issuer
+keyUsage               = critical, nonRepudiation, digitalSignature, keyEncipherment
+extendedKeyUsage       = clientAuth, emailProtection
+nsComment              = "Internal {{ SUBJ_OU }} Client Certificate"
+
+
+####################################################################
+[ server_cert ]
+# Apply the server_cert extension when signing server
+# certificates, such as those used for web servers.
+# Extensions for server certificates (`man x509v3_config`)
+
+# NOT USED YET. This will be useful in [2] and [4]
+
+basicConstraints       = CA:FALSE
+nsCertType             = server
+nsComment              = "Internal {{ SUBJ_OU }} Web Server Certificate"
+subjectKeyIdentifier   = hash
+authorityKeyIdentifier = keyid,issuer:always
+keyUsage               = critical, digitalSignature, keyEncipherment
+extendedKeyUsage       = serverAuth
+
+
+####################################################################
+[ ocsp ]
+# Extension for OCSP signing certificates (`man ocsp`)
+# Apply the ocsp extension when signing the Online Certificate
+# Status Protocol (OCSP) certificate
+
+basicConstraints       = CA:FALSE
+subjectKeyIdentifier   = hash
+authorityKeyIdentifier = keyid,issuer
+keyUsage               = critical, digitalSignature
+extendedKeyUsage       = critical, OCSPSigning
+
+
+####################################################################
+[ v3_req ]
+
+# Extensions to add to a certificate request
+
+basicConstraints = CA:FALSE
+keyUsage = nonRepudiation, digitalSignature, keyEncipherment
+
+
+####################################################################
+[ v3_ca ]
+# #EXT_V3_CA
+#
+# What gets applied when signing certificates.
+# For example, passing the -extensions v3_ca
+# command-line argument will apply the options
+# set in this section.
+# Extensions for a typical CA (`man x509v3_config`)
+
+subjectKeyIdentifier   = hash
+authorityKeyIdentifier = keyid:always,issuer
+basicConstraints       = critical, CA:true
+keyUsage               = critical, digitalSignature, cRLSign, keyCertSign
+
+
+####################################################################
+[ v3_intermediate_ca ]
+# Extensions for a typical intermediate CA (`man x509v3_config`)
+# Apply the v3_ca_intermediate extension when we create an intermediate
+# certificate.
+# pathlen:0 ensures that there can be no further certificate
+# authorities below the intermediate CA [2].
+
+# NOT USED YET. This will be useful in [2]
+
+subjectKeyIdentifier = hash
+authorityKeyIdentifier = keyid:always,issuer
+basicConstraints = critical, CA:true, pathlen:0
+keyUsage = critical, digitalSignature, cRLSign, keyCertSign
+
+
+####################################################################
+[ crl_ext ]
+# #CRL_EXT
+#
+# Only issuerAltName and authorityKeyIdentifier make any sense in a CRL.
+# The crl_ext extension is automatically applied when creating
+# certificate revocation lists.
+
+# issuerAltName=issuer:copy
+authorityKeyIdentifier=keyid:always
+

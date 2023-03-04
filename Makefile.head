@@ -1,0 +1,50 @@
+#
+# Bookmarks of what helped crafting this Makefile:
+# - https://github.com/Respect/Foundation/blob/6d136c03/Makefile
+# - https://tech.davis-hansson.com/p/make/
+#
+
+VERSION        := 0.1.0
+SHELL          := $(shell which bash)
+.SHELLFLAGS     = -c
+THIS            = $(word 1,$(MAKEFILE_LIST))
+UNAME           = $(shell uname)
+ENV             = $(shell command -v env)
+GIT             = $(shell command -v git)
+HAS_OPEN        = $(shell command -v open)
+HAS_XDG         = $(shell command -v xdg)
+HAS_SENSIBLE    = $(shell command -v sensible-browser)
+BROWSER_ALTERNS = $(HAS_XDG) $(HAS_SENSIBLE) $(HAS_OPEN)
+BROWSE          = $(word 1,$(BROWSER_ALTERNS))
+DOTS            = $(shell printf '%0.1s' '.'{1..25})
+
+# Macros
+.CLEAR=\x1b[0m
+.BOLD=\x1b[01m
+.RED=\x1b[31;01m
+.GREEN=\x1b[32;01m
+.YELLOW=\x1b[33;01m
+.ERROR="\ ""\ ""\ ""\ ">"\ "$(.RED)[ERROR]$(.CLEAR)
+.OK="$(.GREEN)[OK]$(.CLEAR)"
+.OKN="\ ""\ ""\ ""\ ">"\ "$(.GREEN)[OK]$(.CLEAR)
+.WARN="\ ""\ ""\ ""\ ">"\ "$(.YELLOW)[WARNING]$(.CLEAR)
+
+.ONESHELL: ;             # recipes execute in same shell
+.NOTPARALLEL: ;          # wait for this target to finish
+.EXPORT_ALL_VARIABLES: ; # send all vars to shell
+default: help-default;   # default target
+Makefile: ;              # skip prerequisite discovery
+
+
+.title:
+	@if [[ ! -n "$(notitle)" ]]; then \
+		echo -e "    $(.BOLD)# Makefile helper: $(VERSION)$(.CLEAR)"; \
+		echo ""; \
+	fi; \
+
+.menu-heading:
+	@echo -e "    $(.BOLD)${title}$(.CLEAR)"
+	@echo -e "    $$(printf '%0.1s' $$(seq -f'=%g' 1 $${#title}))\n"
+
+.menu-item:
+	printf "%-s%0.*s%s\n" "${tgt}:" $$((25 - $${#tgt})) $(DOTS) "${desc}"
