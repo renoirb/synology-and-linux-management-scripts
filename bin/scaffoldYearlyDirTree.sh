@@ -38,11 +38,11 @@ if [[ ${TARGET_PATH} =~ ^\. ]]; then
   echo "Case when './'"
   STRIPPING_PATH=$(echo "${TARGET_PATH}" | sed -E 's#^\./?##g' )
   TARGET_PATH="${PWD}"
-  echo "STRIPPING_PATH:    ${STRIPPING_PATH}"
+  echo "STRIPPING_PATH:			${STRIPPING_PATH}"
   TARGET_PATH+="/${STRIPPING_PATH}"
   if ! [[ "${STRIPPING_PATH}" == "" ]]; then
-    echo "Creating parent: ${STRIPPING_PATH}"
-    mkdir -p "${TARGET_PATH}"
+    echo "TARGET_PATH:			${TARGET_PATH}"
+    #mkdir -p "${TARGET_PATH}"
   fi
 fi
 

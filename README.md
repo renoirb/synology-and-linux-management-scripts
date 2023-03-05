@@ -5,10 +5,10 @@ consistency, or to automate things when they get tedios.
 
 # Note book
 
-- [Explaining bash recipes](./notes/REMINDERS_USEFUL_BASH_PATTERNS.md)
-
-[useful-bash-snippets-gist]:
-  https://gist.github.com/renoirb/361e4e2817341db4be03b8f667338d47#file-bash_snippets-md
+- [Example of how to run _inlined_ python code from a shell script](./notes/EXAMPLE_SHELL_SCRIPT_RUNNING_PYTHON.md)
+- [Advanced `git` CLI patterns](./notes/REMINDERS_ADVANCED_GIT_PATTERNS.md)
+- [Useful `awk` recipes](./notes/REMINDERS_USEFUL_AWK_PATTERNS.md)
+- [Useful `bash` recipes](./notes/REMINDERS_USEFUL_BASH_PATTERNS.md)
 
 # More to migrate
 
@@ -19,12 +19,5 @@ consistency, or to automate things when they get tedios.
 - https://gist.github.com/renoirb/36850e3a23abd7877a25060131b2ecbe
 - https://github.com/webplatform/ops/blob/f6e0390a358068b90444a3396023506d28b3f426/vagrant-workbench/Makefile
 - https://github.com/webplatform/ops/blob/f6e0390a358068b90444a3396023506d28b3f426/salt-master/code.sh
-
-# Also
-
-- http.sh
-  https://gist.github.com/renoirb/361e4e2817341db4be03b8f667338d47#file-http-sh
-- getartifact.sh
-  https://gist.github.com/renoirb/361e4e2817341db4be03b8f667338d47#file-get_artifacts-sh
-- mixing bash python
-  https://gist.github.com/renoirb/361e4e2817341db4be03b8f667338d47#file-mixing_bash_python-sh
+- https://gist.github.com/renoirb/11258261
+- https://gist.github.com/renoirb/fa985b8a6bdc4b8608d05240f98f5adc
