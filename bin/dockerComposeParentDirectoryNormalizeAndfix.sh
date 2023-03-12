@@ -40,6 +40,17 @@ fi
 echo "Where 1:  ${TARGET_PATH}"
 
 
+TARGET_PUID=$(sed -n -e '/PUID/s/.*\= *//p' "${TARGET_PATH}env_file.txt")
+TARGET_UID=$(sed -n -e '/UID/s/.*\= *//p' "${TARGET_PATH}env_file.txt")
+TARGET_PGID=$(sed -n -e '/PGID/s/.*\= *//p' "${TARGET_PATH}env_file.txt")
+TARGET_GID=$(sed -n -e '/GID/s/.*\= *//p' "${TARGET_PATH}env_file.txt")
+
+# echo "   PUID:  ${TARGET_PUID}"
+# echo "    UID:  ${TARGET_UID}"
+# echo "   PGID:  ${TARGET_PGID}"
+# echo "    GID:  ${TARGET_GID}"
+exit 0
+
 chmod -v 750 "${TARGET_PATH}"
 
 chmod -R a=,a+rX,u+w,g+w "${TARGET_PATH}"

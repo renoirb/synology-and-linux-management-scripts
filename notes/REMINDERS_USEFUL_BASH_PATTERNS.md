@@ -237,6 +237,19 @@ Path Muncher
 /foo/bar3/bazz3
 ```
 
+## Nice self-installable and well written
+
+### BitWarden
+
+Have a look at the script used in the following two commands downloaded over HTTP.
+
+The bash script is quite neat and filled with good patterns.
+
+```bash
+http -F https://func.bitwarden.com/api/dl/\?app\=self-host\&platform\=linux
+http -F https://func.bitwarden.com/api/dl/\?app\=self-host\&platform\=linux\&variant\=run
+```
+
 ## More
 
 - [Getting data about files](https://gist.github.com/renoirb/89b9fce3ab41dc08002a806e926d9282)

@@ -1,7 +1,23 @@
 #
-# Bookmarks of what helped crafting this Makefile:
+# Because I never remember all the possible ways to twist things
+#
+# # Bookmarks of what helped crafting this Makefile:
 # - https://github.com/Respect/Foundation/blob/6d136c03/Makefile
 # - https://tech.davis-hansson.com/p/make/
+#
+# # Bookmarks of cool notes
+#
+# - https://github.com/xelalexv/dregsy/blob/b0615fda/Makefile
+# - https://gist.github.com/evertrol/4b6fd05f3b6be2b331c60638b1af7101
+# - https://github.com/xelalexv/dregsy/blob/b0615fda/Makefile
+# - https://github.com/box/Makefile.test
+# - https://makefiletutorial.com/
+# - http://yszheda.github.io/wiki/makefile.html
+#
+# # Makefile so complex (and powerful) I wanna cry
+#
+# - https://github.com/Respect/Foundation/blob/6d136c03/Makefile
+# - https://github.com/xelalexv/dregsy/blob/b0615fda/Makefile
 #
 
 VERSION        := 0.1.0
