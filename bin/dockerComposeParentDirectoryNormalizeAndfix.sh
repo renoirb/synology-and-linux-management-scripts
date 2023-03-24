@@ -24,6 +24,8 @@ TARGET_PATH="${1:-""}"
 
 function error { printf "Error: %s \n " "$@" >&2; exit 1; }
 
+# Generate password
+# pwgen -N 1 -s 96
 
 echo "Where 0:  ${TARGET_PATH}"
 
@@ -40,20 +42,20 @@ fi
 echo "Where 1:  ${TARGET_PATH}"
 
 
-TARGET_PUID=$(sed -n -e '/PUID/s/.*\= *//p' "${TARGET_PATH}env_file.txt")
-TARGET_UID=$(sed -n -e '/UID/s/.*\= *//p' "${TARGET_PATH}env_file.txt")
-TARGET_PGID=$(sed -n -e '/PGID/s/.*\= *//p' "${TARGET_PATH}env_file.txt")
-TARGET_GID=$(sed -n -e '/GID/s/.*\= *//p' "${TARGET_PATH}env_file.txt")
+TARGET_PUID=$(sed -n -e '0,/PUID/s/.*\= *//p' "${TARGET_PATH}env_file.txt" | tail -n 1)
+TARGET_UID=$(sed -n -e '0,/UID/s/.*\= *//p' "${TARGET_PATH}env_file.txt" | tail -n 1)
+TARGET_PGID=$(sed -n -e '0,/PGID/s/.*\= *//p' "${TARGET_PATH}env_file.txt" | tail -n 1)
+TARGET_GID=$(sed -n -e '0,/GID/s/.*\= *//p' "${TARGET_PATH}env_file.txt" | tail -n 1)
 
-# echo "   PUID:  ${TARGET_PUID}"
-# echo "    UID:  ${TARGET_UID}"
-# echo "   PGID:  ${TARGET_PGID}"
-# echo "    GID:  ${TARGET_GID}"
-exit 0
+echo "   PUID:  '${TARGET_PUID}'"
+echo "    UID:  '${TARGET_UID}'"
+echo "   PGID:  '${TARGET_PGID}'"
+echo "    GID:  '${TARGET_GID}'"
+#exit 0
 
 chmod -v 750 "${TARGET_PATH}"
 
 chmod -R a=,a+rX,u+w,g+w "${TARGET_PATH}"
-chown -R toor:sg-docker "${TARGET_PATH}"
+chown -R toor:65540 "${TARGET_PATH}"
 
 find "${TARGET_PATH}" -type d -print0 | xargs -0 -I{} chmod -v 750 {}
